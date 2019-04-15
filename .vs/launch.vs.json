@@ -1,0 +1,14 @@
+{
+	"version": "0.2.1",
+	"defaults": {},
+	"configurations": [
+		{
+			"type": "default",
+			"project": "CMakeLists.txt",
+			"projectTarget": "qmldev.exe",
+			"name": "qmldev.exe",
+			"currentDir": "${workspaceRoot}",
+			"env": "PATH=${env.PATH};D:\\Development\\Libs\\Qt\\5.12.2\\msvc2017_64\\bin"
+		}
+	]
+}

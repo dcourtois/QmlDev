@@ -1,0 +1,34 @@
+{
+	// cmake options
+	"cmake.configureOnOpen": false,
+	"cmake.buildDirectory": "${workspaceRoot}/../Builds/${workspaceRootFolderName}/vscode/${buildType}",
+	"cmake.installPrefix": "${workspaceRoot}/../Installs/${workspaceRootFolderName}/vscode/${buildType}",
+
+	// prevent C++ extension from always overwriting this file ...
+	"C_Cpp.autoAddFileAssociations": false,
+
+	// make the CMake addon provides configurations informations to the C++ addon's intellisense
+	"C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+
+	// I HATE spaces as tabs
+	"editor.insertSpaces": false,
+	"editor.tabSize": 4,
+
+	// Sample launch configurations. Create your own launch.json file next to this one to override.
+	"launch": {
+		"configurations": [
+			{
+				"name": "Windows (launch)",
+				"type": "cppvsdbg",
+				"request": "launch",
+				"program": "${command:cmake.launchTargetPath}",
+				"args": [],
+				"stopAtEntry": false,
+				"cwd": "${workspaceRoot}",
+				"environment": [ { "name": "PATH", "value": "D:\\Development\\Libs\\Qt\\5.12.2\\msvc2017_64\\bin;%PATH%" } ],
+				"externalConsole": false,
+				"visualizerFile": "${workspaceRoot}\\Qt5.natvis"
+			}
+		]
+	}
+}
