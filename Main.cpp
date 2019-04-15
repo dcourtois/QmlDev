@@ -32,13 +32,42 @@ QSettings * settings = nullptr;
 //! The errors
 QString errors;
 
-// forward declaration
-void messageHandler(QtMsgType type, const QMessageLogContext &, const QString & message);
+//!
+//! Capture errors
+//!
+void messageHandler(QtMsgType type, const QMessageLogContext &, const QString & message)
+{
+	// only get the errors / warnings (QML compile errors are sent as warnings...)
+	bool error = false;
+	switch (type)
+	{
+		case QtWarningMsg:
+		case QtCriticalMsg:
+		case QtFatalMsg:
+			error = true;
+			errors += message + "\n";
+			break;
+	}
+
+	// log to either Visual Studio debug output or the standard output, we're still interested
+	// in console.log and such
+#ifdef OutputDebugString
+	OutputDebugStringA(qPrintable(message + "\n"));
+#else
+	printf("%s\n", qPrintable(message));
+#endif
+
+	// if we get a warning during runtime, reload to show it
+	if (loading == false && error == true)
+	{
+		timer.start(100);
+	}
+}
 
 //!
 //! Set the application engine with our main QML file
 //!
-void setup(bool error = false)
+void setup(void)
 {
 	// delete the previous view
 	if (view != nullptr)
@@ -59,19 +88,17 @@ void setup(bool error = false)
 	// re-create the view
 	view = new QQuickView();
 	auto * engine = view->engine();
+	loading = true;
 	qInstallMessageHandler(messageHandler);
 
 	// add import paths
 	engine->addImportPath(currentDir);
 	engine->addImportPath(exeDir);
 
-	// set the source
-	if (error == false)
+	// set the source, only if we don't have errors already
+	if (errors.isEmpty() == true)
 	{
-		loading = true;
-		errors.clear();
 		view->setSource(QUrl::fromLocalFile("Main.qml"));
-		loading = false;
 	}
 
 	// check for errors
@@ -81,12 +108,14 @@ void setup(bool error = false)
 		view->close();
 
 		// display the errors
-		errors = QString("Error %1 'Main.qml':\n\n%2").arg(error ? "executing" : "loading").arg(errors);
 		engine->rootContext()->setContextProperty("fixedFont", QFontDatabase::systemFont(QFontDatabase::FixedFont));
 		engine->rootContext()->setContextProperty("errors", errors);
 		view->setSource(QUrl::fromLocalFile("Error.qml"));
 		errors.clear();
 	}
+
+	// done loading
+	loading = false;
 
 	// apply settings
 	view->setPosition(
@@ -102,36 +131,6 @@ void setup(bool error = false)
 	view->show();
 	view->raise();
 	view->requestActivate();
-}
-
-//!
-//! Capture errors
-//!
-void messageHandler(QtMsgType type, const QMessageLogContext &, const QString & message)
-{
-	// only get the errors / warnings (QML compile errors are sent as warnings...)
-	switch (type)
-	{
-		case QtWarningMsg:
-		case QtCriticalMsg:
-		case QtFatalMsg:
-			errors += message + "\n";
-			break;
-	}
-
-	// log to either Visual Studio debug output or the standard output, we're still interested
-	// in console.log and such
-#ifdef OutputDebugString
-	OutputDebugStringA(qPrintable(message + "\n"));
-#else
-	printf("%s\n", qPrintable(message));
-#endif
-
-	// if we get a warning during runtime, reload to show it
-	if (loading == false && errors.isEmpty() == false)
-	{
-		QTimer::singleShot(100, [] (void) { setup(true); });
-	}
 }
 
 //!
@@ -182,7 +181,7 @@ int main(int argc, char *argv[])
 		QFileSystemWatcher watcher;
 		watch(watcher, exeDir);
 		watch(watcher, currentDir);
-		timer.callOnTimeout([&] () { setup(); });
+		timer.callOnTimeout(setup);
 		timer.setSingleShot(true);
 		QObject::connect(&watcher, &QFileSystemWatcher::directoryChanged, [] (const QString &) { timer.start(100); });
 		QObject::connect(&watcher, &QFileSystemWatcher::fileChanged, [] (const QString &) { timer.start(100); });
