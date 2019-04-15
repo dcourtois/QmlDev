@@ -22,7 +22,6 @@
 				"type": "cppvsdbg",
 				"request": "launch",
 				"program": "${command:cmake.launchTargetPath}",
-				"args": [],
 				"stopAtEntry": false,
 				"cwd": "${workspaceRoot}",
 				"environment": [ { "name": "PATH", "value": "D:\\Development\\Libs\\Qt\\5.12.2\\msvc2017_64\\bin;%PATH%" } ],
