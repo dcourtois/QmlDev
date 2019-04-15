@@ -49,6 +49,13 @@ void setup(QQuickView *& view)
 	// delete the previous view
 	if (view != nullptr)
 	{
+		// backup settings
+		settings->setValue("x", view->position().x());
+		settings->setValue("y", view->position().y());
+		settings->setValue("w", view->size().width());
+		settings->setValue("h", view->size().height());
+
+		// cleanup the previous view
 		view->close();
 		delete view;
 	}
@@ -79,7 +86,7 @@ void setup(QQuickView *& view)
 		view->setSource(QUrl::fromLocalFile("Error.qml"));
 	}
 
-	// settings
+	// apply settings
 	view->setPosition(
 		qMax(50, settings->value("x", view->position().x()).toInt()),
 		qMax(50, settings->value("y", view->position().y()).toInt())
