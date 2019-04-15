@@ -23,6 +23,24 @@ QTimer timer;
 //! Settings to store and restore the view settings
 QSettings * settings = nullptr;
 
+//! The errors
+QString errors;
+
+//!
+//! Capture errors
+//!
+void messageHandler(QtMsgType type, const QMessageLogContext &, const QString & message)
+{
+	switch (type)
+	{
+		case QtWarningMsg:
+		case QtCriticalMsg:
+		case QtFatalMsg:
+			errors += message + "\n";
+			break;
+	}
+}
+
 //!
 //! Set the application engine with our main QML file
 //!
@@ -44,20 +62,16 @@ void setup(QQuickView *& view)
 	engine->addImportPath(exeDir);
 
 	// set the source
+	errors.clear();
+	qInstallMessageHandler(messageHandler);
 	view->setSource(QUrl::fromLocalFile("Main.qml"));
+	qInstallMessageHandler(nullptr);
 
 	// check for errors
-	if (view->errors().isEmpty() == false)
+	if (errors.isEmpty() == false)
 	{
 		// just to be sure
 		view->close();
-
-		// create the error string
-		QString errors;
-		for (const QQmlError & error : view->errors())
-		{
-			errors += QString("%1:%2: %3\n").arg(error.url().toString()).arg(error.line()).arg(error.description());
-		}
 
 		// display the errors
 		engine->rootContext()->setContextProperty("fixedFont", QFontDatabase::systemFont(QFontDatabase::FixedFont));
