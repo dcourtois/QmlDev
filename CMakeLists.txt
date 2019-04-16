@@ -42,13 +42,27 @@ set (CMAKE_AUTORCC ON)
 #
 add_executable (qmldev WIN32
 	Main.cpp
+
+	# needed for moc
+	QtUtils/QuickView.cpp
+	QtUtils/QuickView.h
+	QtUtils/Settings.cpp
+	QtUtils/Settings.h
+)
+
+#
+# Include directories
+#
+target_include_directories (qmldev
+	PRIVATE
+		QtUtils
 )
 
 #
 # compiler's requirements
 #
 target_compile_features (qmldev
-	PUBLIC
+	PRIVATE
 		cxx_std_17
 )
 
@@ -56,7 +70,7 @@ target_compile_features (qmldev
 # libs
 #
 target_link_libraries(qmldev
-	PUBLIC
+	PRIVATE
 		Qt5::Qml
 		Qt5::Quick
 		Qt5::QuickControls2
@@ -67,7 +81,7 @@ target_link_libraries(qmldev
 # Compile definitions
 #
 target_compile_definitions (qmldev
-	PUBLIC
+	PRIVATE
 		# Platforms
 		$<$<PLATFORM_ID:Windows>:WINDOWS>
 
@@ -87,7 +101,7 @@ target_compile_definitions (qmldev
 # Compile options
 #
 target_compile_options (qmldev
-	PUBLIC
+	PRIVATE
 		# All warnings, and compile as errors
 		$<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
 		$<$<CXX_COMPILER_ID:Clang>:-Wall -Werror>

@@ -1,0 +1,3 @@
+[submodule "QtUtils"]
+	path = QtUtils
+	url = https://github.com/dcourtois/QtUtils.git

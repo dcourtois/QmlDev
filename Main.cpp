@@ -6,13 +6,14 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
-#include <QQuickView>
-#include <QSettings>
 #include <QTimer>
+
+#include "QuickView.h"
+#include "Settings.h"
 
 
 //! The QQuickView instance used to display our QML app
-QQuickView * view = nullptr;
+QuickView * view = nullptr;
 
 //! True when the view is loading
 bool loading = false;
@@ -26,8 +27,8 @@ QString exeDir;
 //! Timer used to avoid re-creating the view too many times when multiple file events are sent
 QTimer timer;
 
-//! Settings to store and restore the view settings
-QSettings * settings = nullptr;
+//! Instance of the settings
+Settings * settings = nullptr;
 
 //! The errors
 QString errors;
@@ -72,12 +73,6 @@ void setup(void)
 	// delete the previous view
 	if (view != nullptr)
 	{
-		// backup settings
-		settings->setValue("x", view->position().x());
-		settings->setValue("y", view->position().y());
-		settings->setValue("w", view->size().width());
-		settings->setValue("h", view->size().height());
-
 		// cleanup the previous view
 		qInstallMessageHandler(nullptr);
 		view->close();
@@ -86,7 +81,7 @@ void setup(void)
 	}
 
 	// re-create the view
-	view = new QQuickView();
+	view = new QuickView();
 	auto * engine = view->engine();
 	loading = true;
 	qInstallMessageHandler(messageHandler);
@@ -117,18 +112,7 @@ void setup(void)
 	// done loading
 	loading = false;
 
-	// apply settings
-	view->setPosition(
-		qMax(100, settings->value("x", view->position().x()).toInt()),
-		qMax(100, settings->value("y", view->position().y()).toInt())
-	);
-	view->resize(
-		qMax(400, settings->value("w", view->size().width()).toInt()),
-		qMax(200, settings->value("h", view->size().height()).toInt())
-	);
-
 	// raise
-	view->show();
 	view->raise();
 	view->requestActivate();
 }
@@ -165,11 +149,11 @@ int main(int argc, char *argv[])
 		app.setApplicationName("QmlTestBed");
 		app.setApplicationVersion("0.2");
 
+		// init the settings
+		settings = new Settings();
+
 		// get the application directory
 		exeDir = QApplication::applicationDirPath();
-
-		// create the settings
-		settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, "Citron", "QmlTestBed");
 
 		// set style
 		QQuickStyle::setStyle("Material");
@@ -188,12 +172,6 @@ int main(int argc, char *argv[])
 
 		// run the application
 		code = app.exec();
-
-		// settings
-		settings->setValue("x", view->position().x());
-		settings->setValue("y", view->position().y());
-		settings->setValue("w", view->size().width());
-		settings->setValue("h", view->size().height());
 
 		// cleanup
 		delete view;
