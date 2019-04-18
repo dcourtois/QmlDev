@@ -38,6 +38,11 @@ set (CMAKE_AUTOMOC ON)
 set (CMAKE_AUTORCC ON)
 
 #
+# Utils
+#
+add_subdirectory (QtUtils)
+
+#
 # The library
 #
 add_executable (qmldev WIN32
@@ -75,6 +80,9 @@ target_link_libraries(qmldev
 		Qt5::Quick
 		Qt5::QuickControls2
 		Qt5::Widgets
+
+		# QtUtils
+		QtUtils
 )
 
 #
