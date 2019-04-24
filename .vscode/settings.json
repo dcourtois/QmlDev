@@ -24,7 +24,7 @@
 				"program": "${command:cmake.launchTargetPath}",
 				"stopAtEntry": false,
 				"cwd": "${workspaceRoot}",
-				"environment": [ { "name": "PATH", "value": "D:\\Development\\Libs\\Qt\\5.12.2\\msvc2017_64\\bin;%PATH%" } ],
+				"environment": [ { "name": "PATH", "value": "D:\\Development\\Libs\\Qt\\5.12.3\\msvc2017_64\\bin;%PATH%" } ],
 				"externalConsole": false,
 				"visualizerFile": "${workspaceRoot}\\Qt5.natvis"
 			}

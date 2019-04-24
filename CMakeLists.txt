@@ -16,7 +16,7 @@ include (CMakeUtils.cmake)
 #
 # Define options for this project
 #
-cu_option (QT_DIR "D:/Development/Libs/Qt/5.12.2/msvc2017_64/lib/cmake")
+cu_option (QT_DIR "D:/Development/Libs/Qt/5.12.3/msvc2017_64/lib/cmake")
 
 #
 # Configure Qt
