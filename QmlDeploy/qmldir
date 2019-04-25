@@ -1,0 +1,6 @@
+#
+# Fake module used for deploying a standalone application.
+# See import.qml
+#
+module QmlDeploy
+QmlDeployImports 1.0 import.qml

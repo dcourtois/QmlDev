@@ -122,3 +122,39 @@ target_compile_options (qmldev
 		$<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
 		$<$<CXX_COMPILER_ID:Clang>:-Wall -Werror>
 )
+
+
+#
+# Install the release version only
+#
+install (TARGETS qmldev
+	RUNTIME DESTINATION .
+	LIBRARY DESTINATION .
+	ARCHIVE DESTINATION .
+)
+
+install (FILES
+	Main.qml
+	Error.qml
+	DESTINATION .
+)
+
+find_program (QT_DEPLOY_TOOL
+	NAMES
+		windeployqt
+	HINTS
+		${QT_DIR}/../../bin
+)
+
+install (CODE "
+	execute_process(
+		COMMAND ${QT_DEPLOY_TOOL} --qmldir \"${CMAKE_CURRENT_SOURCE_DIR}/QmlDeploy\" \"${CMAKE_INSTALL_PREFIX}/qmldev${CMAKE_EXECUTABLE_SUFFIX}\"
+			--no-compiler-runtime
+			--no-opengl-sw
+			--no-webkit2
+			--no-system-d3d-compiler
+			--no-translations
+			--no-qmltooling
+		WORKING_DIRECTORY ${QT_DIR}/bin
+	)
+")
