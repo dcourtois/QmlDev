@@ -9,18 +9,26 @@ cmake_minimum_required(VERSION 3.8)
 project(qmldev)
 
 #
-# Include our utility scripts
+# totally remove warnings.
 #
-include (CMakeUtils.cmake)
+string (REGEX REPLACE "(/W[^ ]+)|(-W[123])" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 #
-# Define options for this project
+# Find Qt.
 #
-cu_option (QT_DIR "D:/Development/Libs/Qt/5.12.3/msvc2017_64/lib/cmake")
+find_path (QT_DIR Qt5
+	HINTS
+		"${QT_DIR}"
+		"C:/Development/Libs/Qt/5.12.3/msvc2017_64"
+		"D:/Development/Libs/Qt/5.12.3/msvc2017_64"
+	PATH_SUFFIXES
+		"lib/cmake"
+)
 
-#
-# Configure Qt
-#
+if (NOT QT_DIR)
+	message (FATAL_ERROR "Couldn't find Qt. Use QT_DIR variable to point to a valid Qt install.")
+endif ()
+
 set (CMAKE_PREFIX_PATH ${QT_DIR})
 find_package (Qt5 5.12
 	COMPONENTS
