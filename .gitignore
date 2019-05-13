@@ -1,0 +1,6 @@
+#
+# Ignore IDE's configuration files
+#
+.vs
+.vscode
+*.user
