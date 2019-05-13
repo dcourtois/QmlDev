@@ -19,10 +19,13 @@ string (REGEX REPLACE "(/W[^ ]+)|(-W[123])" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAG
 find_path (QT_DIR Qt5
 	HINTS
 		"${QT_DIR}"
-		"C:/Development/Libs/Qt/5.12.3/msvc2017_64"
-		"D:/Development/Libs/Qt/5.12.3/msvc2017_64"
+		"C:/Development/Libs/Qt/5.12.3"
+		"D:/Development/Libs/Qt/5.12.3"
+		"~/Development/Libs/Qt/5.12.3"
 	PATH_SUFFIXES
-		"lib/cmake"
+		"msvc2017_64/lib/cmake"
+		"gcc_64/lib/cmake"
+		"clang_64/lib/cmake"
 )
 
 if (NOT QT_DIR)
@@ -125,36 +128,40 @@ target_compile_options (qmldev
 
 
 #
-# Install the release version only
+# Create a target to install a standalone version on Windows
 #
-install (TARGETS qmldev
-	RUNTIME DESTINATION .
-	LIBRARY DESTINATION .
-	ARCHIVE DESTINATION .
-)
+if (WIN32)
 
-install (FILES
-	Main.qml
-	Error.qml
-	DESTINATION .
-)
-
-find_program (QT_DEPLOY_TOOL
-	NAMES
-		windeployqt
-	HINTS
-		${QT_DIR}/../../bin
-)
-
-install (CODE "
-	execute_process(
-		COMMAND ${QT_DEPLOY_TOOL} --qmldir \"${CMAKE_CURRENT_SOURCE_DIR}/QmlDeploy\" \"${CMAKE_INSTALL_PREFIX}/qmldev${CMAKE_EXECUTABLE_SUFFIX}\"
-			--no-compiler-runtime
-			--no-opengl-sw
-			--no-webkit2
-			--no-system-d3d-compiler
-			--no-translations
-			--no-qmltooling
-		WORKING_DIRECTORY ${QT_DIR}/bin
+	install (TARGETS qmldev
+		RUNTIME DESTINATION .
+		LIBRARY DESTINATION .
+		ARCHIVE DESTINATION .
 	)
-")
+
+	install (FILES
+		Main.qml
+		Error.qml
+		DESTINATION .
+	)
+
+	find_program (QT_DEPLOY_TOOL
+		NAMES
+			windeployqt
+		HINTS
+			${QT_DIR}/../../bin
+	)
+
+	install (CODE "
+		execute_process(
+			COMMAND ${QT_DEPLOY_TOOL} --qmldir \"${CMAKE_CURRENT_SOURCE_DIR}/QmlDeploy\" \"${CMAKE_INSTALL_PREFIX}/qmldev${CMAKE_EXECUTABLE_SUFFIX}\"
+				--no-compiler-runtime
+				--no-opengl-sw
+				--no-webkit2
+				--no-system-d3d-compiler
+				--no-translations
+				--no-qmltooling
+			WORKING_DIRECTORY ${QT_DIR}/bin
+		)
+	")
+
+endif ()

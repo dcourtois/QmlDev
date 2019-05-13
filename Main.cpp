@@ -130,7 +130,7 @@ void watch(QFileSystemWatcher & watcher, QDir directory)
 			QString file = directory.absoluteFilePath(name);
 			QFileInfo(file).isDir() == true ?
 				watch(watcher, QDir(file)) :
-				watcher.addPath(file);
+				(void)watcher.addPath(file);
 		}
 	}
 }
