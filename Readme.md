@@ -22,8 +22,9 @@ The path to the Qt libraries is located in `CMakeLists.txt` and setup for my ins
 use your own by setting the `QT_DIR` CMake variable when configuring (e.g. run `cmake` with `-DQT_DIR=<path_to_qt>`
 while configuring)
 
-Use
----
+Usage
+-----
+
 Once built, run it and it will try to load a `Main.qml` file from the current working directory, and if not
 found, from the executable's directory.
 
@@ -42,6 +43,18 @@ are made available:
 
 - `fixedFont`: system's default fixed width font (returned by QFontDatabase::systemFont(QFontDatabase::FixedFont))
 - `errors`: a string containing the QQuickView's errors that happened while loading `Main.qml`
+
+Options
+-------
+
+The executable supports a few options to allow overriding the application (in C++, so no hot-reload there)
+
+- `--style <style>`: by default, the style used is `Material`, you can override that with this option.
+- `--transparent`: if you want to experiment with transparent / frameless QML applications, use this flag,
+and in the root QML item's `Component.onCompleted` callback, set the `rootView`'s flags to `Qt.Window | Qt.WindowlessHint`)
+- `--backend <backend>`: override the default backend used to render the QQuick scene.
+
+Use the `--help` option to display a bit more informations.
 
 Contributing
 ------------

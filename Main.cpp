@@ -1,4 +1,6 @@
 #include <QApplication>
+#include <QCommandLineOption>
+#include <QCommandLineParser>
 #include <QDir>
 #include <QFileInfo>
 #include <QFileSystemWatcher>
@@ -32,6 +34,9 @@ Settings * settings = nullptr;
 
 //! The errors
 QString errors;
+
+//! Transparent option
+bool transparent = false;
 
 //!
 //! Capture errors
@@ -93,14 +98,27 @@ void setup(void)
 	// set the source, only if we don't have errors already
 	if (errors.isEmpty() == true)
 	{
+		// set options
+		if (transparent == true)
+		{
+			view->setDefaultAlphaBuffer(true);
+			view->setColor(Qt::transparent);
+		}
+
+		// set the source
 		view->setSource(QUrl::fromLocalFile("Main.qml"));
 	}
 
 	// check for errors
 	if (errors.isEmpty() == false)
 	{
-		// just to be sure
+		// recreate the view, it's the easiest way to restore its default state: at this
+		// point, the users might have changed the window flags, default color, transparency,
+		// etc. And reading errors on a transparent window is kinda hard
 		view->close();
+		delete view;
+		view = new QuickView();
+		engine = view->engine();
 
 		// display the errors
 		engine->rootContext()->setContextProperty("fixedFont", QFontDatabase::systemFont(QFontDatabase::FixedFont));
@@ -136,18 +154,64 @@ void watch(QFileSystemWatcher & watcher, QDir directory)
 }
 
 //!
+//! Process the command line arguments
+//!
+void options(int argc, char ** argv)
+{
+	// command line
+	QCommandLineParser parser;
+	parser.setApplicationDescription("QmlDev");
+	parser.addHelpOption();
+	parser.addVersionOption();
+	parser.addOption(QCommandLineOption("transparent", "Create a transparent window. This allows to test frameless QML application."));
+	parser.addOption(QCommandLineOption("style", "Override the default `Material` style. See Qt's QQuickStyle::setStyle documentation.", "style", "Material"));
+	parser.addOption(QCommandLineOption("backend", "Override the default QQuick rendering backend. See Qt's QQuickWindow::setSceneGraphBackend documentation.", "backend"));
+
+	// get the arguments manually (we disabled QApplication's access to them to avoid
+	// the default arguments to mix with ours)
+	QStringList arguments;
+	for (int i = 0; i < argc; ++i)
+	{
+		arguments << argv[i];
+	}
+
+	// process
+	parser.process(arguments);
+
+	// style (Material by default, no need to check if it's set)
+	QQuickStyle::setStyle(parser.value("style"));
+
+	// backend
+	if (parser.isSet("backend") == true)
+	{
+		QQuickWindow::setSceneGraphBackend(parser.value("backend"));
+	}
+
+	// transparency (used in setup())
+	if (parser.isSet("transparent") == true)
+	{
+		transparent = true;
+	}
+}
+
+//!
 //! Entry point of the application
 //!
-int main(int argc, char *argv[])
+int main(int argc, char ** argv)
 {
 	int code = -1;
 	{
-		// create and setup the application
-		QApplication app(argc, argv);
+		// create and setup the application (note that we disable arguments to avoid
+		// QApplication handling our command line arguments)
+		int dummyArgc = 1;
+		QApplication app(dummyArgc, argv);
 		app.setOrganizationName("Citron");
 		app.setOrganizationDomain("Citron.org");
 		app.setApplicationName("QmlTestBed");
-		app.setApplicationVersion("0.2");
+		app.setApplicationVersion("0.3");
+
+		// process options
+		options(argc, argv);
 
 		// init the settings
 		settings = new Settings();
@@ -155,20 +219,19 @@ int main(int argc, char *argv[])
 		// get the application directory
 		exeDir = QApplication::applicationDirPath();
 
-		// set style
-		QQuickStyle::setStyle("Material");
-
 		// initialize the application engine
 		setup();
+		Q_ASSERT(view != nullptr);
 
 		// install a file system watcher to be able to hot-reload the QML when it changes
+		// note: we're using a timer to avoid too many reloads
 		QFileSystemWatcher watcher;
 		watch(watcher, exeDir);
 		watch(watcher, currentDir);
 		timer.callOnTimeout(setup);
 		timer.setSingleShot(true);
-		QObject::connect(&watcher, &QFileSystemWatcher::directoryChanged, [] (const QString &) { timer.start(100); });
-		QObject::connect(&watcher, &QFileSystemWatcher::fileChanged, [] (const QString &) { timer.start(100); });
+		QObject::connect(&watcher, &QFileSystemWatcher::directoryChanged, [] (const QString &) { timer.start(250); });
+		QObject::connect(&watcher, &QFileSystemWatcher::fileChanged, [] (const QString &) { timer.start(250); });
 
 		// run the application
 		code = app.exec();
