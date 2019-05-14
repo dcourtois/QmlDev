@@ -128,21 +128,23 @@ target_compile_options (qmldev
 
 
 #
-# Create a target to install a standalone version on Windows
+# Installation
+#
+install (TARGETS qmldev
+	RUNTIME DESTINATION .
+	LIBRARY DESTINATION .
+	ARCHIVE DESTINATION .
+)
+install (FILES
+	Main.qml
+	Error.qml
+	DESTINATION .
+)
+
+#
+# On Windows, use windeployqt tool to create a standalone install
 #
 if (WIN32)
-
-	install (TARGETS qmldev
-		RUNTIME DESTINATION .
-		LIBRARY DESTINATION .
-		ARCHIVE DESTINATION .
-	)
-
-	install (FILES
-		Main.qml
-		Error.qml
-		DESTINATION .
-	)
 
 	find_program (QT_DEPLOY_TOOL
 		NAMES
