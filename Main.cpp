@@ -230,8 +230,14 @@ int main(int argc, char ** argv)
 		watch(watcher, currentDir);
 		timer.callOnTimeout(setup);
 		timer.setSingleShot(true);
-		QObject::connect(&watcher, &QFileSystemWatcher::directoryChanged, [] (const QString &) { timer.start(250); });
-		QObject::connect(&watcher, &QFileSystemWatcher::fileChanged, [] (const QString &) { timer.start(250); });
+		QObject::connect(&watcher, &QFileSystemWatcher::directoryChanged, [&] (const QString & name) {
+			watch(watcher, name);
+			timer.start(250);
+		});
+		QObject::connect(&watcher, &QFileSystemWatcher::fileChanged, [] (const QString & name) {
+			Q_UNUSED(name);
+			timer.start(250);
+		});
 
 		// run the application
 		code = app.exec();
