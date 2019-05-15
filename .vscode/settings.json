@@ -3,6 +3,7 @@
 	"cmake.configureOnOpen": false,
 	"cmake.buildDirectory": "${workspaceRoot}/../Builds/${workspaceRootFolderName}/vscode/${buildType}",
 	"cmake.installPrefix": "${workspaceRoot}/../Installs/${workspaceRootFolderName}/vscode/${buildType}",
+	"cmake.configureSettings": { "CMAKE_INSTALL_RPATH_USE_LINK_PATH": 1 },
 
 	// prevent C++ extension from always overwriting this file ...
 	"C_Cpp.autoAddFileAssociations": false,
