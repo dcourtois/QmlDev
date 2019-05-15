@@ -105,6 +105,10 @@ void setup(void)
 			view->setColor(Qt::transparent);
 		}
 
+		// expose a few usefull things
+		engine->rootContext()->setContextProperty("fixedFont", QFontDatabase::systemFont(QFontDatabase::FixedFont));
+		engine->rootContext()->setContextProperty("settings", settings);
+
 		// set the source
 		view->setSource(QUrl::fromLocalFile("Main.qml"));
 	}
