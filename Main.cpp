@@ -71,6 +71,23 @@ void messageHandler(QtMsgType type, const QMessageLogContext &, const QString & 
 }
 
 //!
+//! Get a file from (first) the working directory, and if not found, from the
+//! executable folder.
+//!
+QUrl findFile(const QString & file)
+{
+	if (QDir(currentDir).exists(file) == true)
+	{
+		return QUrl::fromLocalFile(QDir(currentDir).filePath(file));
+	}
+	else if (QDir(exeDir).exists(file) == true)
+	{
+		return QUrl::fromLocalFile(QDir(exeDir).filePath(file));
+	}
+	return QUrl();
+}
+
+//!
 //! Set the application engine with our main QML file
 //!
 void setup(void)
@@ -110,7 +127,7 @@ void setup(void)
 		engine->rootContext()->setContextProperty("settings", settings);
 
 		// set the source
-		view->setSource(QUrl::fromLocalFile("Main.qml"));
+		view->setSource(findFile("Main.qml"));
 	}
 
 	// check for errors
@@ -127,7 +144,7 @@ void setup(void)
 		// display the errors
 		engine->rootContext()->setContextProperty("fixedFont", QFontDatabase::systemFont(QFontDatabase::FixedFont));
 		engine->rootContext()->setContextProperty("errors", errors);
-		view->setSource(QUrl::fromLocalFile("Error.qml"));
+		view->setSource(findFile("Error.qml"));
 		errors.clear();
 	}
 
