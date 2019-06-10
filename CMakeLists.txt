@@ -51,6 +51,7 @@ set (CMAKE_AUTORCC ON)
 #
 # Utils
 #
+set (QT_UTILS_GENERATE_DOCUMENTATION ON)
 add_subdirectory (QtUtils)
 
 #
