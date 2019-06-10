@@ -58,12 +58,6 @@ add_subdirectory (QtUtils)
 #
 add_executable (qmldev WIN32
 	Main.cpp
-
-	# needed for moc
-	QtUtils/QuickView.cpp
-	QtUtils/QuickView.h
-	QtUtils/Settings.cpp
-	QtUtils/Settings.h
 )
 
 #

@@ -12,6 +12,7 @@
 
 #include "QuickView.h"
 #include "Settings.h"
+#include "File.h"
 
 
 //! The QQuickView instance used to display our QML app
@@ -37,6 +38,10 @@ QString errors;
 
 //! Transparent option
 bool transparent = false;
+
+//! Instance of the settings
+File * fileHelper = nullptr;
+
 
 //!
 //! Capture errors
@@ -124,6 +129,7 @@ void setup(void)
 
 		// expose a few usefull things
 		engine->rootContext()->setContextProperty("fixedFont", QFontDatabase::systemFont(QFontDatabase::FixedFont));
+		engine->rootContext()->setContextProperty("file", fileHelper);
 		engine->rootContext()->setContextProperty("settings", settings);
 
 		// set the source
@@ -234,8 +240,9 @@ int main(int argc, char ** argv)
 		// process options
 		options(argc, argv);
 
-		// init the settings
+		// init some helpers
 		settings = new Settings();
+		fileHelper = new File();
 
 		// get the application directory
 		exeDir = QApplication::applicationDirPath();
@@ -266,6 +273,7 @@ int main(int argc, char ** argv)
 		// cleanup
 		delete view;
 		delete settings;
+		delete fileHelper;
 	}
 
 	return code;
