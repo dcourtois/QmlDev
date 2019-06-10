@@ -1,7 +1,9 @@
 Qml Dev
 -------
 
-This little project is a hot-reload test-bed for QML applications.
+This little project is a hot-reload test-bed for QML applications. This means that you run once, and then can
+edit your QML application during runtime. As soon as you save, the app is reloaded, taking your changes into
+account. Compilation / runtime errors are dynamically shown in place of the application if needed:
 
 ![demo](https://github.com/dcourtois/Images/raw/master/QmlDev/qmldev.gif)
 
@@ -43,6 +45,12 @@ are made available:
 
 - `fixedFont`: system's default fixed width font (returned by QFontDatabase::systemFont(QFontDatabase::FixedFont))
 - `errors`: a string containing the QQuickView's errors that happened while loading `Main.qml`
+
+This project being based on [QtUtils](https://github.com/dcourtois/QtUtils) I also made a few utilities
+globally available:
+
+- `settings`: global instance of the [Settings](https://github.com/dcourtois/QtUtils/blob/master/Settings.h) class.
+- `file`: global instance of the [File](https://github.com/dcourtois/QtUtils/blob/master/File.h) class.
 
 Options
 -------
