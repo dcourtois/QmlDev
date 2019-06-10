@@ -49,8 +49,9 @@ are made available:
 This project being based on [QtUtils](https://github.com/dcourtois/QtUtils) I also made a few utilities
 globally available:
 
-- `settings`: global instance of the [Settings](https://github.com/dcourtois/QtUtils/blob/master/Settings.h) class.
-- `file`: global instance of the [File](https://github.com/dcourtois/QtUtils/blob/master/File.h) class.
+- `rootView`: the main [QuickView](https://github.com/dcourtois/QtUtils/blob/master/API.md#class-quickview) instance
+- `settings`: global instance of the [Settings](https://github.com/dcourtois/QtUtils/blob/master/API.md#class-settings) class.
+- `file`: global instance of the [File](https://github.com/dcourtois/QtUtils/blob/master/API.md#class-file) class.
 
 Options
 -------
