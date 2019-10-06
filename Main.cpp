@@ -128,6 +128,9 @@ void setup(void)
 		}
 
 		// expose a few usefull things
+
+		// expose ourselves to QML
+		engine->rootContext()->setContextProperty("rootView", view);
 		engine->rootContext()->setContextProperty("fixedFont", QFontDatabase::systemFont(QFontDatabase::FixedFont));
 		engine->rootContext()->setContextProperty("file", fileHelper);
 		engine->rootContext()->setContextProperty("settings", settings);
@@ -234,7 +237,7 @@ int main(int argc, char ** argv)
 		QApplication app(dummyArgc, argv);
 		app.setOrganizationName("Citron");
 		app.setOrganizationDomain("Citron.org");
-		app.setApplicationName("QmlTestBed");
+		app.setApplicationName("QmlDev");
 		app.setApplicationVersion("0.3");
 
 		// process options
