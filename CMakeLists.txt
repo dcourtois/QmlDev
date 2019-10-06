@@ -18,10 +18,13 @@ string (REGEX REPLACE "(/W[^ ]+)|(-W[123])" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAG
 #
 find_path (QT_DIR Qt5
 	HINTS
+		# User set directory
 		"${QT_DIR}"
-		"C:/Development/Libs/Qt/5.12.3"
-		"D:/Development/Libs/Qt/5.12.3"
-		"~/Development/Libs/Qt/5.12.3"
+
+		# My dev directories, depending on which machine I'm on
+		"C:/Development/Libs/Qt/5.13.1"
+		"D:/Development/Libs/Qt/5.13.1"
+		"~/Development/Libs/Qt/5.13.1"
 	PATH_SUFFIXES
 		"msvc2017_64/lib/cmake"
 		"gcc_64/lib/cmake"
@@ -33,7 +36,7 @@ if (NOT QT_DIR)
 endif ()
 
 set (CMAKE_PREFIX_PATH ${QT_DIR})
-find_package (Qt5 5.12
+find_package (Qt5 5
 	COMPONENTS
 		Qml
 		Quick
@@ -51,7 +54,7 @@ set (CMAKE_AUTORCC ON)
 #
 # Utils
 #
-set (QT_UTILS_GENERATE_DOCUMENTATION ON)
+set (QT_UTILS_GENERATE_DOCUMENTATION OFF)
 add_subdirectory (QtUtils)
 
 #
