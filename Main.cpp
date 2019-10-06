@@ -21,6 +21,9 @@ QuickView * view = nullptr;
 //! True when the view is loading
 bool loading = false;
 
+//! Get the system's fixed font
+QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+
 //! Current dir
 QString currentDir = QDir::currentPath();
 
@@ -131,7 +134,7 @@ void setup(void)
 
 		// expose ourselves to QML
 		engine->rootContext()->setContextProperty("rootView", view);
-		engine->rootContext()->setContextProperty("fixedFont", QFontDatabase::systemFont(QFontDatabase::FixedFont));
+		engine->rootContext()->setContextProperty("fixedFont", fixedFont);
 		engine->rootContext()->setContextProperty("file", fileHelper);
 		engine->rootContext()->setContextProperty("settings", settings);
 
@@ -151,7 +154,7 @@ void setup(void)
 		engine = view->engine();
 
 		// display the errors
-		engine->rootContext()->setContextProperty("fixedFont", QFontDatabase::systemFont(QFontDatabase::FixedFont));
+		engine->rootContext()->setContextProperty("fixedFont", fixedFont);
 		engine->rootContext()->setContextProperty("errors", errors);
 		view->setSource(findFile("Error.qml"));
 		errors.clear();
