@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ windows-latest ]
+        os: [ windows-latest, ubuntu-latest, macOS-latest ]
         buildType: [ Release, Debug ]
     
     name: ${{ matrix.buildType }} build on ${{ matrix.os }}
