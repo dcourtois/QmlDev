@@ -1,0 +1,49 @@
+name: Continuous Integration
+
+on: [ push ]
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macOS-latest ]
+        buildType: [ Release, Debug ]
+    
+    name: ${{ matrix.buildType }} build on ${{ matrix.os }}
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@master
+        with:
+          version: 5.13.1
+
+      - name: Create build folder
+        shell: bash
+        run: mkdir ../build
+
+      - name: Configure
+        shell: bash
+        working-directory: ../build
+        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_INSTALL_PREFIX=../install
+
+      - name: Build
+        shell: bash
+        working-directory: ../build
+        run: cmake --build . --config ${{ matrix.buildType }}
+
+      - name: Install
+        shell: bash
+        working-directory: ../build
+        run: cmake --build . --config ${{ matrix.buildType }} --target install
+        
+      - name: Create Artefact
+        if: ${{ matrix.buildType }} == "Release"
+        uses: actions/upload-artifact@master
+        with:
+          name: qmldev-${{ matrix.os }}
+          path: ../install
