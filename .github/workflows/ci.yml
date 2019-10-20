@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-latest, macOS-latest ]
+        os: [ windows-latest ]
         buildType: [ Release, Debug ]
     
     name: ${{ matrix.buildType }} build on ${{ matrix.os }}
@@ -31,7 +31,7 @@ jobs:
       - name: Configure
         shell: bash
         working-directory: ../build
-        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_INSTALL_PREFIX=../install
+        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_INSTALL_PREFIX=../install -DQT_DIR=$Qt5_Dir
 
       - name: Build
         shell: bash
