@@ -42,7 +42,7 @@ jobs:
         run: cmake --build . --config ${{ matrix.buildType }} --target install
         
       - name: Create Artefact
-        if: ${{ matrix.buildType }} == "Release"
+        if: matrix.buildType == 'Release'
         uses: actions/upload-artifact@master
         with:
           name: qmldev-${{ matrix.os }}
