@@ -1,7 +1,7 @@
 Qml Dev
 -------
 
-![](https://github.com/dcourtois/QmlDev/workflows/Continuous%20Integration/badge.svg)
+[![](https://github.com/dcourtois/QmlDev/workflows/Continuous%20Integration/badge.svg)](https://github.com/dcourtois/QmlDev/actions)
 
 This little project is a hot-reload test-bed for QML applications. This means that you run once, and then can
 edit your QML application during runtime. As soon as you save, the app is reloaded, taking your changes into
