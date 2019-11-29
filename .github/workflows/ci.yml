@@ -19,7 +19,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
         with:
-          submodules: recursive 
+          submodules: recursive
+
+      - name: Patch install-qt-action
+        shell: bash
+        run: pip3 install setuptools
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v1
