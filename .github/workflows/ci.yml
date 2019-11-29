@@ -22,8 +22,14 @@ jobs:
           submodules: recursive
 
       - name: Patch install-qt-action
+        if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: pip3 install setuptools
+
+      - name: Install GL headers
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: sudo apt install mesa-common-dev libglu1-mesa-dev
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v1
