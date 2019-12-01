@@ -10,7 +10,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macOS-latest ]
         buildType: [ Release, Debug ]
-    
+
     name: ${{ matrix.buildType }} build on ${{ matrix.os }}
 
     runs-on: ${{ matrix.os }}
@@ -21,18 +21,13 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Patch install-qt-action
-        if: matrix.os == 'ubuntu-latest'
-        shell: bash
-        run: pip3 install setuptools
-
       - name: Install GL headers
         if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: sudo apt install mesa-common-dev libglu1-mesa-dev
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v1
+        uses: jurplel/install-qt-action@v2
         with:
           version: 5.13.1
 
@@ -54,7 +49,7 @@ jobs:
         shell: bash
         working-directory: ../build
         run: cmake --build . --config ${{ matrix.buildType }} --target install
-        
+
       - name: Create Artefact
         if: matrix.buildType == 'Release'
         uses: actions/upload-artifact@master
