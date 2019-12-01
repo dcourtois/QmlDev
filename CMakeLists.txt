@@ -22,9 +22,9 @@ find_path (QT_DIR Qt5
 		"${QT_DIR}"
 
 		# My dev directories, depending on which machine I'm on
-		"C:/Development/Libs/Qt/5.13.1"
-		"D:/Development/Libs/Qt/5.13.1"
-		"~/Development/Libs/Qt/5.13.1"
+		"C:/Development/Libs/Qt/5.13.2"
+		"D:/Development/Libs/Qt/5.13.2"
+		"~/Development/Libs/Qt/5.13.2"
 	PATH_SUFFIXES
 		"msvc2017_64/lib/cmake"
 		"gcc_64/lib/cmake"
@@ -54,7 +54,6 @@ set (CMAKE_AUTORCC ON)
 #
 # Utils
 #
-set (QT_UTILS_GENERATE_DOCUMENTATION OFF)
 add_subdirectory (QtUtils)
 
 #
