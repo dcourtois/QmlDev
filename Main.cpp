@@ -131,8 +131,6 @@ void setup(void)
 		}
 
 		// expose a few usefull things
-
-		// expose ourselves to QML
 		engine->rootContext()->setContextProperty("rootView", view);
 		engine->rootContext()->setContextProperty("fixedFont", fixedFont);
 		engine->rootContext()->setContextProperty("file", fileHelper);
@@ -163,7 +161,8 @@ void setup(void)
 	// done loading
 	loading = false;
 
-	// raise
+	// restore and raise
+	view->Restore(800, 600, QWindow::Visibility::Windowed);
 	view->raise();
 	view->requestActivate();
 }

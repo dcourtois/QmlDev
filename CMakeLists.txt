@@ -6,50 +6,18 @@ cmake_minimum_required(VERSION 3.8)
 #
 # Project
 #
-project(qmldev)
-
-#
-# totally remove warnings.
-#
-string (REGEX REPLACE "(/W[^ ]+)|(-W[123])" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-
-#
-# Find Qt.
-#
-find_path (QT_DIR Qt5
-	HINTS
-		# User set directory
-		"${QT_DIR}"
-
-		# My dev directories, depending on which machine I'm on
-		"C:/Development/Libs/Qt/5.13.2"
-		"D:/Development/Libs/Qt/5.13.2"
-		"~/Development/Libs/Qt/5.13.2"
-	PATH_SUFFIXES
-		"msvc2017_64/lib/cmake"
-		"gcc_64/lib/cmake"
-		"clang_64/lib/cmake"
-)
-
-if (NOT QT_DIR)
-	message (FATAL_ERROR "Couldn't find Qt. Use QT_DIR variable to point to a valid Qt install.")
-endif ()
-
-set (CMAKE_PREFIX_PATH ${QT_DIR})
-find_package (Qt5 5
-	COMPONENTS
-		Qml
-		Quick
-		QuickControls2
-		Widgets
-	REQUIRED
+project(qmldev
+	VERSION 0.1.0
+	LANGUAGES CXX
+	DESCRIPTION "QML development helper with support for automatic hot reloading."
 )
 
 #
-# Auto moc and rcc
+# Setup CMake, Qt, load our utilities, etc.
 #
-set (CMAKE_AUTOMOC ON)
-set (CMAKE_AUTORCC ON)
+include (cmake/Setup.cmake)
+include (cmake/CMakeUtils/Qt.cmake)
+include (cmake/CMakeUtils/Utils.cmake)
 
 #
 # Utils
@@ -98,19 +66,33 @@ target_link_libraries(qmldev
 #
 target_compile_definitions (qmldev
 	PRIVATE
+		# Qt/QML debug stuff
+		$<$<NOT:$<CONFIG:Release>>:QT_QML_DEBUG>
+		$<$<CONFIG:Release>:QT_NO_DEBUG>
+		$<$<CONFIG:Release>:QT_NO_DEBUG_OUTPUT>
+		$<$<CONFIG:Release>:QT_NO_INFO_OUTPUT>
+		$<$<CONFIG:Release>:QT_NO_WARNING_OUTPUT>
+
+		# Build type
+		$<$<CONFIG:Release>:RELEASE>
+		$<$<NOT:$<CONFIG:Release>>:DEBUG>
+
 		# Platforms
 		$<$<PLATFORM_ID:Windows>:WINDOWS>
+		$<$<PLATFORM_ID:Linux>:LINUX>
+		$<$<PLATFORM_ID:Darwin>:MACOS>
 
 		# Compilers
 		$<$<CXX_COMPILER_ID:MSVC>:MSVC>
 		$<$<CXX_COMPILER_ID:Clang>:CLANG>
+		$<$<CXX_COMPILER_ID:GNU>:GCC>
 
-		# Some warnings
-		$<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>
+		# Disable some annoying warnings
+		# note that Clang on Windows uses the same STL as MSVC, so it suffers from the same warnings
+		$<$<PLATFORM_ID:Windows>:_CRT_SECURE_NO_WARNINGS>
 
 		# QML debug
-		$<$<NOT:$<CONFIG:Release>>:QT_QML_DEBUG>
-		$<$<NOT:$<CONFIG:Release>>:QML_IMPORT_TRACE=1>
+		$<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
 )
 
 #
@@ -118,16 +100,16 @@ target_compile_definitions (qmldev
 #
 target_compile_options (qmldev
 	PRIVATE
-		# All warnings, and compile as errors
-		$<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
-		$<$<CXX_COMPILER_ID:Clang>:-Wall -Werror>
+		# Warning configurations
+		$<$<CXX_COMPILER_ID:MSVC>:/W4 $<$<BOOL:${WARNINGS_AS_ERRORS}>:/WX>>
+		$<$<CXX_COMPILER_ID:Clang>:-Wall $<$<BOOL:${WARNINGS_AS_ERRORS}>:-Werror>>
+		$<$<CXX_COMPILER_ID:GNU>:-Wall $<$<BOOL:${WARNINGS_AS_ERRORS}>:-Werror>>
 )
-
 
 #
 # Installation
 #
-install (TARGETS qmldev
+install_qt_target (qmldev "${CMAKE_CURRENT_SOURCE_DIR}/QmlDeploy"
 	RUNTIME DESTINATION .
 	LIBRARY DESTINATION .
 	ARCHIVE DESTINATION .
@@ -137,30 +119,3 @@ install (FILES
 	Error.qml
 	DESTINATION .
 )
-
-#
-# On Windows, use windeployqt tool to create a standalone install
-#
-if (WIN32)
-
-	find_program (QT_DEPLOY_TOOL
-		NAMES
-			windeployqt
-		HINTS
-			${QT_DIR}/../../bin
-	)
-
-	install (CODE "
-		execute_process(
-			COMMAND ${QT_DEPLOY_TOOL} --qmldir \"${CMAKE_CURRENT_SOURCE_DIR}/QmlDeploy\" \"${CMAKE_INSTALL_PREFIX}/qmldev${CMAKE_EXECUTABLE_SUFFIX}\"
-				--no-compiler-runtime
-				--no-opengl-sw
-				--no-webkit2
-				--no-system-d3d-compiler
-				--no-translations
-				--no-qmltooling
-			WORKING_DIRECTORY ${QT_DIR}/bin
-		)
-	")
-
-endif ()
