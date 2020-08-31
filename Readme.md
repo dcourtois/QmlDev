@@ -64,6 +64,7 @@ The executable supports a few options to allow overriding the application (in C+
 - `--transparent`: if you want to experiment with transparent / frameless QML applications, use this flag,
 and in the root QML item's `Component.onCompleted` callback, set the `rootView`'s flags to `Qt.Window | Qt.WindowlessHint`)
 - `--backend <backend>`: override the default backend used to render the QQuick scene.
+- `--app <file.qml>`: override the name of the main QML file which is loaded (the `Main.qml` file)
 
 Use the `--help` option to display a bit more informations.
 

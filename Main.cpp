@@ -33,6 +33,9 @@ QString exeDir;
 //! Timer used to avoid re-creating the view too many times when multiple file events are sent
 QTimer timer;
 
+//! Main QML file
+QString mainFile("Main.qml");
+
 //! Instance of the settings
 Settings * settings = nullptr;
 
@@ -137,7 +140,7 @@ void setup(void)
 		engine->rootContext()->setContextProperty("settings", settings);
 
 		// set the source
-		view->setSource(findFile("Main.qml"));
+		view->setSource(findFile(mainFile));
 	}
 
 	// check for errors
@@ -198,6 +201,7 @@ void options(int argc, char ** argv)
 	parser.addOption(QCommandLineOption("transparent", "Create a transparent window. This allows to test frameless QML application."));
 	parser.addOption(QCommandLineOption("style", "Override the default `Material` style. See Qt's QQuickStyle::setStyle documentation.", "style", "Material"));
 	parser.addOption(QCommandLineOption("backend", "Override the default QQuick rendering backend. See Qt's QQuickWindow::setSceneGraphBackend documentation.", "backend"));
+	parser.addOption(QCommandLineOption("app", "Override the default QML file which is loaded as the main application file.", mainFile));
 
 	// get the arguments manually (we disabled QApplication's access to them to avoid
 	// the default arguments to mix with ours)
@@ -223,6 +227,12 @@ void options(int argc, char ** argv)
 	if (parser.isSet("transparent") == true)
 	{
 		transparent = true;
+	}
+
+	// main app file
+	if (parser.isSet("app") == true)
+	{
+		mainFile = parser.value("app");
 	}
 }
 
