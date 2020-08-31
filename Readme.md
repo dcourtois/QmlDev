@@ -62,11 +62,21 @@ The executable supports a few options to allow overriding the application (in C+
 
 - `--style <style>`: by default, the style used is `Material`, you can override that with this option.
 - `--transparent`: if you want to experiment with transparent / frameless QML applications, use this flag,
-and in the root QML item's `Component.onCompleted` callback, set the `rootView`'s flags to `Qt.Window | Qt.WindowlessHint`)
+and in the root QML item's `Component.onCompleted` callback, set the `rootView`'s flags to `Qt.Window | Qt.FramelessWindowHint`)
 - `--backend <backend>`: override the default backend used to render the QQuick scene.
 - `--app <file.qml>`: override the name of the main QML file which is loaded (the `Main.qml` file)
 
 Use the `--help` option to display a bit more informations.
+
+Examples
+--------
+
+### Custom client-side window decoration
+
+`$> qmldev --transparent --app Frameless.qml`
+
+This simply use the new methods (Qt 5.15) of `QWindow` to handle system resize and move. The red and blue areas resize the
+view, the white one is the custom title bar allowing to move the window, and the black area closes the view.
 
 Contributing
 ------------
