@@ -202,6 +202,7 @@ void options(int argc, char ** argv)
 	parser.addOption(QCommandLineOption("style", "Override the default `Material` style. See Qt's QQuickStyle::setStyle documentation.", "style", "Material"));
 	parser.addOption(QCommandLineOption("backend", "Override the default QQuick rendering backend. See Qt's QQuickWindow::setSceneGraphBackend documentation.", "backend"));
 	parser.addOption(QCommandLineOption("app", "Override the default QML file which is loaded as the main application file.", mainFile));
+	parser.addOption(QCommandLineOption("clearSettings", "Clears the settings to simulate a first-time run."));
 
 	// get the arguments manually (we disabled QApplication's access to them to avoid
 	// the default arguments to mix with ours)
@@ -234,6 +235,12 @@ void options(int argc, char ** argv)
 	{
 		mainFile = parser.value("app");
 	}
+
+	// clear the settings
+	if (parser.isSet("clearSettings") == true)
+	{
+		settings->Clear();
+	}
 }
 
 //!
@@ -252,12 +259,12 @@ int main(int argc, char ** argv)
 		app.setApplicationName("QmlDev");
 		app.setApplicationVersion("0.3");
 
-		// process options
-		options(argc, argv);
-
 		// init some helpers
 		settings = new Settings();
 		fileHelper = new File();
+
+		// process options
+		options(argc, argv);
 
 		// get the application directory
 		exeDir = QApplication::applicationDirPath();

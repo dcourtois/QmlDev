@@ -65,6 +65,7 @@ The executable supports a few options to allow overriding the application (in C+
 and in the root QML item's `Component.onCompleted` callback, set the `rootView`'s flags to `Qt.Window | Qt.FramelessWindowHint`)
 - `--backend <backend>`: override the default backend used to render the QQuick scene.
 - `--app <file.qml>`: override the name of the main QML file which is loaded (the `Main.qml` file)
+- `--clearSettings`: this will clear all settings before starting the application (used to check how it behaves on a fresh run)
 
 Use the `--help` option to display a bit more informations.
 
