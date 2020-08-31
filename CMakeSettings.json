@@ -15,7 +15,7 @@
 			"generator": "Ninja",
 			"inheritEnvironments": [ "msvc_x64_x64" ],
 			"configurationType": "Release",
-			"cmakeCommandArgs": "-DCMAKE_INSTALL_PREFIX=${workspaceRoot}\\..\\Installs\\${env.projectName}\\vs2017\\${name}",
+			"cmakeCommandArgs": "-DCMAKE_INSTALL_PREFIX=${workspaceRoot}\\..\\Installs\\${env.projectName}\\vs2019\\${name}",
 			"buildRoot": "${workspaceRoot}\\..\\Builds\\${env.projectName}\\vs2019\\${name}"
 		},
 		{
@@ -23,7 +23,7 @@
 			"generator": "Ninja",
 			"inheritEnvironments": [ "msvc_x64_x64" ],
 			"configurationType": "RelWithDebInfo",
-			"cmakeCommandArgs": "-DCMAKE_INSTALL_PREFIX=${workspaceRoot}\\..\\Installs\\${env.projectName}\\vs2017\\${name}",
+			"cmakeCommandArgs": "-DCMAKE_INSTALL_PREFIX=${workspaceRoot}\\..\\Installs\\${env.projectName}\\vs2019\\${name}",
 			"buildRoot": "${workspaceRoot}\\..\\Builds\\${env.projectName}\\vs2019\\${name}"
 		},
 		{
@@ -31,7 +31,7 @@
 			"generator": "Ninja",
 			"inheritEnvironments": [ "msvc_x64_x64" ],
 			"configurationType" : "Debug",
-			"cmakeCommandArgs": "-DCMAKE_INSTALL_PREFIX=${workspaceRoot}\\..\\Installs\\${env.projectName}\\vs2017\\${name}",
+			"cmakeCommandArgs": "-DCMAKE_INSTALL_PREFIX=${workspaceRoot}\\..\\Installs\\${env.projectName}\\vs2019\\${name}",
 			"buildRoot": "${workspaceRoot}\\..\\Builds\\${env.projectName}\\vs2019\\${name}"
 		}
 	]
