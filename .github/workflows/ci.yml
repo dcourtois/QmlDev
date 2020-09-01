@@ -33,21 +33,21 @@ jobs:
 
       - name: Create build folder
         shell: bash
-        run: mkdir ${{ env.HOME }}/build
+        run: mkdir build
 
       - name: Configure
         shell: bash
-        working-directory: ${{ env.HOME }}/build
-        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_INSTALL_PREFIX=${{ env.HOME }}/install -DQT_DIR=$Qt5_Dir
+        working-directory: build
+        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_INSTALL_PREFIX=../install -DQT_DIR=$Qt5_Dir
 
       - name: Build
         shell: bash
-        working-directory: ${{ env.HOME }}/build
+        working-directory: build
         run: cmake --build . --config ${{ matrix.buildType }}
 
       - name: Install
         shell: bash
-        working-directory: ${{ env.HOME }}/build
+        working-directory: build
         run: cmake --build . --config ${{ matrix.buildType }} --target install
 
       - name: Create Artefact
@@ -55,4 +55,4 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: qmldev-${{ matrix.os }}
-          path: ${{ env.HOME }}/install
+          path: install
