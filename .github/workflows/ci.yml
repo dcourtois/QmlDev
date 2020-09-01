@@ -29,25 +29,25 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
-          version: 5.13.1
+          version: 5.15.0
 
       - name: Create build folder
         shell: bash
-        run: mkdir ../build
+        run: mkdir ${{ env.HOME }}/build
 
       - name: Configure
         shell: bash
-        working-directory: ../build
-        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_INSTALL_PREFIX=../install -DQT_DIR=$Qt5_Dir
+        working-directory: ${{ env.HOME }}/build
+        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_INSTALL_PREFIX=${{ env.HOME }}/install -DQT_DIR=$Qt5_Dir
 
       - name: Build
         shell: bash
-        working-directory: ../build
+        working-directory: ${{ env.HOME }}/build
         run: cmake --build . --config ${{ matrix.buildType }}
 
       - name: Install
         shell: bash
-        working-directory: ../build
+        working-directory: ${{ env.HOME }}/build
         run: cmake --build . --config ${{ matrix.buildType }} --target install
 
       - name: Create Artefact
@@ -55,4 +55,4 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: qmldev-${{ matrix.os }}
-          path: ../install
+          path: ${{ env.HOME }}/install
