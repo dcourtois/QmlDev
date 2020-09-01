@@ -76,8 +76,8 @@ Examples
 
 `$> qmldev --transparent --app Frameless.qml`
 
-This simply use the new methods (Qt 5.15) of `QWindow` to handle system resize and move. The red and blue areas resize the
-view, the white one is the custom title bar allowing to move the window, and the black area closes the view.
+This display a small framework for displaying a custom title bar, and uses the new methods (Qt 5.15) of `QWindow` to handle system
+resize and move.
 
 Contributing
 ------------

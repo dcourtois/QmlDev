@@ -4,13 +4,8 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.15
 
 
-Pane {
+Item {
 	id: root
-
-	padding: 0
-
-	Material.accent: Material.Blue
-	Material.theme: Material.Dark
 
 	property int borderSize: 10
 
@@ -20,10 +15,17 @@ Pane {
 
 	component ResizeBorder : Rectangle {
 		property var edges: 0
-		color: "red"
-		DragHandler {
-			target: null
-			onActiveChanged: if (active) { rootView.startSystemResize(edges); }
+		property var cursor: Qt.ArrowCursor
+		color: Qt.rgba(0, 0, 0, 0)
+		MouseArea {
+			anchors.fill: parent
+			hoverEnabled: true
+			onEntered: cursorShape = parent.cursor
+			onExited: cursorShape = Qt.ArrowCursor
+			onPressed: {
+				mouse.accepted = true;
+				rootView.startSystemResize(parent.edges);
+			}
 		}
 	}
 
@@ -44,7 +46,7 @@ Pane {
 			width: borderSize
 			height: borderSize
 			edges: Qt.LeftEdge | Qt.TopEdge
-			color: "blue"
+			cursor: Qt.SizeFDiagCursor
 		}
 
 		// upper
@@ -52,6 +54,7 @@ Pane {
 			Layout.fillWidth: true
 			height: borderSize
 			edges: Qt.TopEdge
+			cursor: Qt.SizeVerCursor
 		}
 
 		// upper-right
@@ -59,7 +62,7 @@ Pane {
 			width: borderSize
 			height: borderSize
 			edges: Qt.RightEdge | Qt.TopEdge
-			color: "blue"
+			cursor: Qt.SizeBDiagCursor
 		}
 
 		// left
@@ -67,12 +70,18 @@ Pane {
 			width: borderSize
 			Layout.fillHeight: true
 			edges: Qt.LeftEdge
+			cursor: Qt.SizeHorCursor
 		}
 
 		// center
-		Item {
+		Pane {
 			Layout.fillWidth: true
 			Layout.fillHeight: true
+
+			padding: 0
+
+			Material.accent: Material.Blue
+			Material.theme: Material.Dark
 
 			// custom title bar
 			Rectangle {
@@ -83,6 +92,14 @@ Pane {
 				}
 
 				height: 30
+
+				MouseArea {
+					anchors.fill: parent
+					onPressed: {
+						mouse.accepted = true;
+						rootView.startSystemMove();
+					}
+				}
 
 				Rectangle {
 					anchors {
@@ -95,16 +112,12 @@ Pane {
 
 					color: "black"
 
-					PointHandler {
-						target: null
-						onActiveChanged: rootView.close()
+					MouseArea {
+						anchors.fill: parent
+						onPressed: rootView.close()
 					}
 				}
 
-				DragHandler {
-					target: null
-					onActiveChanged: if (active) { rootView.startSystemMove(); }
-				}
 			}
 		}
 
@@ -113,6 +126,7 @@ Pane {
 			width: borderSize
 			Layout.fillHeight: true
 			edges: Qt.RightEdge
+			cursor: Qt.SizeHorCursor
 		}
 
 		// bottom-left
@@ -120,7 +134,7 @@ Pane {
 			width: borderSize
 			height: borderSize
 			edges: Qt.LeftEdge | Qt.BottomEdge
-			color: "blue"
+			cursor: Qt.SizeBDiagCursor
 		}
 
 		// bottom
@@ -128,6 +142,7 @@ Pane {
 			Layout.fillWidth: true
 			height: borderSize
 			edges: Qt.BottomEdge
+			cursor: Qt.SizeVerCursor
 		}
 
 		// bottom-right
@@ -135,7 +150,7 @@ Pane {
 			width: borderSize
 			height: borderSize
 			edges: Qt.RightEdge | Qt.BottomEdge
-			color: "blue"
+			cursor: Qt.SizeFDiagCursor
 		}
 
 	}
