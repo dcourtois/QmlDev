@@ -24,6 +24,12 @@ Pane {
 			text: checked ? "Dark" : "Light"
 		}
 
+		Switch {
+			checked: false
+			text: checked ? "Fullscreen" : "Windowed"
+			onCheckedChanged: rootView.fullscreen = checked
+		}
+
 	}
 
 }
