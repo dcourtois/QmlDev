@@ -1,22 +1,45 @@
-import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Controls.Material 2.12
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Window 2.3
 
 
-Item {
+// Make the main window a Pane to be able to inherit from the Material themes
+Pane {
 	id: root
 
-	property int borderSize: 10
+	// remove spacing and padding
+	padding: 0
+	spacing: 0
 
+	// configure the Material theme
+	Material.accent: Material.Blue
+	Material.theme: theme.checked ? Material.Dark : Material.Light
+
+	// remove the frame of the main window
 	Component.onCompleted: {
 		rootView.flags |= Qt.FramelessWindowHint;
 	}
 
-	component ResizeBorder : Rectangle {
+	// This controls the size of the handles used to resize the window. And the inset are
+	// necessary to leave a transparent area for the handles.
+	property int borderSize: rootView.visibility === Window.Windowed ? 10 : 0
+	topInset: borderSize
+	bottomInset: borderSize
+	leftInset: borderSize
+	rightInset: borderSize
+
+	// This is a reusable component used to handle risizing. It's basically a transparent rectangle with a
+	// MouseArea which is used to simulate the way a usual desktop window is resized
+	component ResizeHandle : Rectangle {
+		width: edges & (Qt.LeftEdge | Qt.RightEdge) ? root.borderSize : undefined
+		height: edges & (Qt.TopEdge | Qt.BottomEdge) ? root.borderSize : undefined
 		property var edges: 0
 		property var cursor: Qt.ArrowCursor
+		enabled: root.borderSize !== 0
 		color: Qt.rgba(0, 0, 0, 0)
+		opacity: 0
 		MouseArea {
 			anchors.fill: parent
 			hoverEnabled: true
@@ -29,130 +52,182 @@ Item {
 		}
 	}
 
-	GridLayout {
+	// Reusable component used to display the 3 buttons on the top-right corner of the window (the minimize, maximize and close ones)
+	// Note: I coulnd't find any way to correctly customize existing controls, thus this custom one
+	component SquareToolButton : ToolButton {
+		id: control
+		implicitWidth: implicitHeight + 10
+		implicitHeight: menuBar.height
+		padding: 0
+		spacing: 0
+		property bool close: false
+		Material.foreground: close && hovered && Material.theme === Material.Light ? Material.background : undefined
+		background: Rectangle {
+			color: control.close ? Qt.rgba(1, 0, 0, 1) : (Material.theme === Material.Dark ? Qt.rgba(1, 1, 1, 1) : Qt.rgba(0, 0, 0, 1))
+			opacity: control.hovered ? (control.close ? 0.7 : 0.2) : 0
+		}
+	}
+
+	//
+	// The following are the resizing borders and corners
+	//
+
+	// upper-left
+	ResizeHandle {
+		id: upperLeft
+		anchors { left: parent.left; top: parent.top }
+		edges: Qt.LeftEdge | Qt.TopEdge
+		cursor: Qt.SizeFDiagCursor
+	}
+
+	// upper
+	ResizeHandle {
+		id: upper
+		anchors { left: upperLeft.right; top: parent.top; right: upperRight.left }
+		edges: Qt.TopEdge
+		cursor: Qt.SizeVerCursor
+	}
+
+	// upper-right
+	ResizeHandle {
+		id: upperRight
+		anchors { top: parent.top; right: parent.right }
+		edges: Qt.RightEdge | Qt.TopEdge
+		cursor: Qt.SizeBDiagCursor
+	}
+
+	// right
+	ResizeHandle {
+		id: right
+		anchors { top: upperRight.bottom; right: parent.right; bottom: bottomRight.top }
+		edges: Qt.RightEdge
+		cursor: Qt.SizeHorCursor
+	}
+
+	// bottom-right
+	ResizeHandle {
+		id: bottomRight
+		anchors { right: parent.right; bottom: parent.bottom }
+		edges: Qt.RightEdge | Qt.BottomEdge
+		cursor: Qt.SizeFDiagCursor
+	}
+
+	// bottom
+	ResizeHandle {
+		id: bottom
+		anchors { left: bottomLeft.right; bottom: parent.bottom; right: bottomRight.left }
+		edges: Qt.BottomEdge
+		cursor: Qt.SizeVerCursor
+	}
+
+	// bottom-left
+	ResizeHandle {
+		id: bottomLeft
+		anchors { left: parent.left; bottom: parent.bottom }
+		edges: Qt.LeftEdge | Qt.BottomEdge
+		cursor: Qt.SizeBDiagCursor
+	}
+
+	// left
+	ResizeHandle {
+		id: left
+		anchors { left: parent.left; top: upperLeft.bottom; bottom: bottomLeft.top }
+		edges: Qt.LeftEdge
+		cursor: Qt.SizeHorCursor
+	}
+
+	// Custom title bar. This is a row with a menu on the left, and central item where you can
+	// set a title, and the right part where the 3 buttons controlling the window are located.
+	RowLayout {
+		id: header
+
 		anchors {
-			fill: parent
-			margins: 0
+			top: upper.bottom
+			left: left.right
+			right: right.left
 		}
 
-		columnSpacing: 0
-		rowSpacing: 0
+		spacing: 0
 
-		columns: 3
-		rows: 3
-
-		// upper-left
-		ResizeBorder {
-			width: borderSize
-			height: borderSize
-			edges: Qt.LeftEdge | Qt.TopEdge
-			cursor: Qt.SizeFDiagCursor
-		}
-
-		// upper
-		ResizeBorder {
-			Layout.fillWidth: true
-			height: borderSize
-			edges: Qt.TopEdge
-			cursor: Qt.SizeVerCursor
-		}
-
-		// upper-right
-		ResizeBorder {
-			width: borderSize
-			height: borderSize
-			edges: Qt.RightEdge | Qt.TopEdge
-			cursor: Qt.SizeBDiagCursor
-		}
-
-		// left
-		ResizeBorder {
-			width: borderSize
-			Layout.fillHeight: true
-			edges: Qt.LeftEdge
-			cursor: Qt.SizeHorCursor
-		}
-
-		// center
-		Pane {
-			Layout.fillWidth: true
-			Layout.fillHeight: true
-
-			padding: 0
-
-			Material.accent: Material.Blue
-			Material.theme: Material.Dark
-
-			// custom title bar
-			Rectangle {
-				anchors {
-					left: parent.left
-					top: parent.top
-					right: parent.right
-				}
-
-				height: 30
-
-				MouseArea {
-					anchors.fill: parent
-					onPressed: {
-						mouse.accepted = true;
-						rootView.startSystemMove();
-					}
-				}
-
-				Rectangle {
-					anchors {
-						top: parent.top
-						right: parent.right
-					}
-
-					width: 30
-					height: 30
-
-					color: "black"
-
-					MouseArea {
-						anchors.fill: parent
-						onPressed: rootView.close()
-					}
-				}
-
+		// The main menu
+		MenuBar {
+			id: menuBar
+			topInset: 0
+			background: Rectangle {
+				implicitWidth: 40
+				implicitHeight: 40
+				opacity: 0
+			}
+			Menu {
+				title: qsTr("&File")
+				Action { text: qsTr("&New...") }
+				Action { text: qsTr("&Open...") }
+				Action { text: qsTr("&Save") }
+				Action { text: qsTr("Save &As...") }
+				MenuSeparator { }
+				Action { text: qsTr("&Quit") }
 			}
 		}
 
-		// right
-		ResizeBorder {
-			width: borderSize
-			Layout.fillHeight: true
-			edges: Qt.RightEdge
-			cursor: Qt.SizeHorCursor
-		}
-
-		// bottom-left
-		ResizeBorder {
-			width: borderSize
-			height: borderSize
-			edges: Qt.LeftEdge | Qt.BottomEdge
-			cursor: Qt.SizeBDiagCursor
-		}
-
-		// bottom
-		ResizeBorder {
+		// This is the empty part between the menu and the window buttons. It can be used to display the title
+		// of the application, or whatever, and has a MouseArea to allow moving the window.
+		Item {
+			height: menuBar.height
 			Layout.fillWidth: true
-			height: borderSize
-			edges: Qt.BottomEdge
-			cursor: Qt.SizeVerCursor
+			Label {
+				anchors.centerIn: parent
+				text: "This is a title"
+			}
+			MouseArea {
+				anchors.fill: parent
+				onPressed: rootView.startSystemMove()
+				onDoubleClicked: rootView.visibility === Window.Maximized ? rootView.showNormal() : rootView.showMaximized()
+			}
 		}
 
-		// bottom-right
-		ResizeBorder {
-			width: borderSize
-			height: borderSize
-			edges: Qt.RightEdge | Qt.BottomEdge
-			cursor: Qt.SizeFDiagCursor
+		// The buttons used to minimize, maximize and close the application
+		SquareToolButton {
+			text: "🗕"
+			font.pixelSize: Qt.application.font.pixelSize * 1.5
+			onClicked: rootView.showMinimized()
 		}
-
+		SquareToolButton {
+			text: rootView.visibility === Window.Maximized ? "🗗" : "🗖"
+			font.pixelSize: Qt.application.font.pixelSize * 1.5
+			onClicked: rootView.visibility === Window.Maximized ? rootView.showNormal() : rootView.showMaximized()
+		}
+		SquareToolButton {
+			text: "🗙"
+			close: true
+			font.pixelSize: Qt.application.font.pixelSize * 1.5
+			onClicked: rootView.close()
+		}
 	}
 
+	// And finally, the content
+	Item {
+		id: content
+		anchors {
+			margins: 0
+			top: header.bottom
+			bottom: bottom.top
+			left: left.right
+			right: right.left
+		}
+
+		ColumnLayout {
+			anchors.centerIn: parent
+
+			Button {
+				text: "Hello"
+				onClicked: text = text === "Hello" ? "World" : "Hello"
+			}
+
+			Switch {
+				id: theme
+				checked: true
+				text: checked ? "Dark" : "Light"
+			}
+		}
+	}
 }
