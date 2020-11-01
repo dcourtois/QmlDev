@@ -35,7 +35,7 @@ Pane {
 
 	// This controls the size of the handles used to resize the window. And the inset are
 	// necessary to leave a transparent area for the handles.
-	property int borderSize: rootView.visibility === Window.Windowed ? 10 : 0
+	property int borderSize: rootView.visibility === Window.Windowed && rootView.fullscreen === false ? 10 : 0
 	topInset: borderSize
 	bottomInset: borderSize
 	leftInset: borderSize
