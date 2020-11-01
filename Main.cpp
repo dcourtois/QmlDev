@@ -58,7 +58,6 @@ void messageHandler(QtMsgType type, const QMessageLogContext &, const QString & 
 	bool error = false;
 	switch (type)
 	{
-		case QtWarningMsg:
 		case QtCriticalMsg:
 		case QtFatalMsg:
 			error = true;
