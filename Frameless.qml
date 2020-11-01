@@ -2,232 +2,100 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
-import QtQuick.Window 2.3
 
 
-// Make the main window a Pane to be able to inherit from the Material themes
-Pane {
+FramelessWindow {
 	id: root
 
-	// remove spacing and padding
-	padding: 0
-	spacing: 0
-
-	// configure the Material theme
-	Material.accent: Material.Blue
-	Material.theme: theme.checked ? Material.Dark : Material.Light
-
-	// remove the frame of the main window
-	Component.onCompleted: {
-		rootView.flags |= Qt.FramelessWindowHint;
-	}
-
-	// This controls the size of the handles used to resize the window. And the inset are
-	// necessary to leave a transparent area for the handles.
-	property int borderSize: rootView.visibility === Window.Windowed ? 10 : 0
-	topInset: borderSize
-	bottomInset: borderSize
-	leftInset: borderSize
-	rightInset: borderSize
-
-	// This is a reusable component used to handle risizing. It's basically a transparent rectangle with a
-	// MouseArea which is used to simulate the way a usual desktop window is resized
-	component ResizeHandle : Rectangle {
-		width: edges & (Qt.LeftEdge | Qt.RightEdge) ? root.borderSize : undefined
-		height: edges & (Qt.TopEdge | Qt.BottomEdge) ? root.borderSize : undefined
-		property var edges: 0
-		property var cursor: Qt.ArrowCursor
-		enabled: root.borderSize !== 0
-		color: Qt.rgba(0, 0, 0, 0)
-		opacity: 0
-		MouseArea {
-			anchors.fill: parent
-			hoverEnabled: true
-			onEntered: cursorShape = parent.cursor
-			onExited: cursorShape = Qt.ArrowCursor
-			onPressed: {
-				mouse.accepted = true;
-				rootView.startSystemResize(parent.edges);
-			}
+	// example menu
+	menu: MenuBar {
+		background: Rectangle { opacity: 0 }
+		Menu {
+			title: qsTr("&File")
+			Action { text: qsTr("&New...") }
+			Action { text: qsTr("&Open...") }
+			Action { text: qsTr("&Save") }
+			Action { text: qsTr("Save &As...") }
+			MenuSeparator { }
+			Action { text: qsTr("&Quit") }
 		}
 	}
 
-	// Reusable component used to display the 3 buttons on the top-right corner of the window (the minimize, maximize and close ones)
-	// Note: I coulnd't find any way to correctly customize existing controls, thus this custom one
-	component SquareToolButton : ToolButton {
-		id: control
-		implicitWidth: implicitHeight + 10
-		implicitHeight: menuBar.height
-		padding: 0
-		spacing: 0
-		property bool close: false
-		Material.foreground: close && hovered && Material.theme === Material.Light ? Material.background : undefined
-		background: Rectangle {
-			color: control.close ? Qt.rgba(1, 0, 0, 1) : (Material.theme === Material.Dark ? Qt.rgba(1, 1, 1, 1) : Qt.rgba(0, 0, 0, 1))
-			opacity: control.hovered ? (control.close ? 0.7 : 0.2) : 0
-		}
+	// example title
+	title: Label {
+		text: "This is a title"
+		anchors.fill: parent
+		horizontalAlignment: Text.AlignHCenter
+		verticalAlignment: Text.AlignVCenter
 	}
 
-	//
-	// The following are the resizing borders and corners
-	//
+	// example content
+	content: ColumnLayout {
+		anchors.centerIn: parent
 
-	// upper-left
-	ResizeHandle {
-		id: upperLeft
-		anchors { left: parent.left; top: parent.top }
-		edges: Qt.LeftEdge | Qt.TopEdge
-		cursor: Qt.SizeFDiagCursor
-	}
-
-	// upper
-	ResizeHandle {
-		id: upper
-		anchors { left: upperLeft.right; top: parent.top; right: upperRight.left }
-		edges: Qt.TopEdge
-		cursor: Qt.SizeVerCursor
-	}
-
-	// upper-right
-	ResizeHandle {
-		id: upperRight
-		anchors { top: parent.top; right: parent.right }
-		edges: Qt.RightEdge | Qt.TopEdge
-		cursor: Qt.SizeBDiagCursor
-	}
-
-	// right
-	ResizeHandle {
-		id: right
-		anchors { top: upperRight.bottom; right: parent.right; bottom: bottomRight.top }
-		edges: Qt.RightEdge
-		cursor: Qt.SizeHorCursor
-	}
-
-	// bottom-right
-	ResizeHandle {
-		id: bottomRight
-		anchors { right: parent.right; bottom: parent.bottom }
-		edges: Qt.RightEdge | Qt.BottomEdge
-		cursor: Qt.SizeFDiagCursor
-	}
-
-	// bottom
-	ResizeHandle {
-		id: bottom
-		anchors { left: bottomLeft.right; bottom: parent.bottom; right: bottomRight.left }
-		edges: Qt.BottomEdge
-		cursor: Qt.SizeVerCursor
-	}
-
-	// bottom-left
-	ResizeHandle {
-		id: bottomLeft
-		anchors { left: parent.left; bottom: parent.bottom }
-		edges: Qt.LeftEdge | Qt.BottomEdge
-		cursor: Qt.SizeBDiagCursor
-	}
-
-	// left
-	ResizeHandle {
-		id: left
-		anchors { left: parent.left; top: upperLeft.bottom; bottom: bottomLeft.top }
-		edges: Qt.LeftEdge
-		cursor: Qt.SizeHorCursor
-	}
-
-	// Custom title bar. This is a row with a menu on the left, and central item where you can
-	// set a title, and the right part where the 3 buttons controlling the window are located.
-	RowLayout {
-		id: header
-
-		anchors {
-			top: upper.bottom
-			left: left.right
-			right: right.left
+		Button {
+			text: "Hello"
+			onClicked: text = text === "Hello" ? "World" : "Hello"
 		}
 
-		spacing: 0
-
-		// The main menu
-		MenuBar {
-			id: menuBar
-			topInset: 0
-			background: Rectangle {
-				implicitWidth: 40
-				implicitHeight: 40
-				opacity: 0
-			}
-			Menu {
-				title: qsTr("&File")
-				Action { text: qsTr("&New...") }
-				Action { text: qsTr("&Open...") }
-				Action { text: qsTr("&Save") }
-				Action { text: qsTr("Save &As...") }
-				MenuSeparator { }
-				Action { text: qsTr("&Quit") }
+		// note that ComboBox in Dark theme is buggy: you won't see the text (white on white -_-')
+		ComboBox {
+			id: accent
+			model: [
+				"Red",
+				"Pink",
+				"Purple",
+				"DeepPurple",
+				"Indigo",
+				"Blue",
+				"LightBlue",
+				"Cyan",
+				"Teal",
+				"Green",
+				"LightGreen",
+				"Lime",
+				"Yellow",
+				"Amber",
+				"Orange",
+				"DeepOrange",
+				"Brown",
+				"Grey",
+				"BlueGrey",
+			]
+			onCurrentTextChanged: switch (currentText) {
+				case "Red":			root.Material.accent = Material.Red;		break;
+				case "Pink":		root.Material.accent = Material.Pink;		break;
+				case "Purple":		root.Material.accent = Material.Purple;		break;
+				case "DeepPurple":	root.Material.accent = Material.DeepPurple;	break;
+				case "Indigo":		root.Material.accent = Material.Indigo;		break;
+				case "Blue":		root.Material.accent = Material.Blue;		break;
+				case "LightBlue":	root.Material.accent = Material.LightBlue;	break;
+				case "Cyan":		root.Material.accent = Material.Cyan;		break;
+				case "Teal":		root.Material.accent = Material.Teal;		break;
+				case "Green":		root.Material.accent = Material.Green;		break;
+				case "LightGreen":	root.Material.accent = Material.LightGreen;	break;
+				case "Lime":		root.Material.accent = Material.Lime;		break;
+				case "Yellow":		root.Material.accent = Material.Yellow;		break;
+				case "Amber":		root.Material.accent = Material.Amber;		break;
+				case "Orange":		root.Material.accent = Material.Orange;		break;
+				case "DeepOrange":	root.Material.accent = Material.DeepOrange;	break;
+				case "Brown":		root.Material.accent = Material.Brown;		break;
+				case "Grey":		root.Material.accent = Material.Grey;		break;
+				case "BlueGrey":	root.Material.accent = Material.BlueGrey;	break;
 			}
 		}
 
-		// This is the empty part between the menu and the window buttons. It can be used to display the title
-		// of the application, or whatever, and has a MouseArea to allow moving the window.
-		Item {
-			height: menuBar.height
-			Layout.fillWidth: true
-			Label {
-				anchors.centerIn: parent
-				text: "This is a title"
-			}
-			MouseArea {
-				anchors.fill: parent
-				onPressed: rootView.startSystemMove()
-				onDoubleClicked: rootView.visibility === Window.Maximized ? rootView.showNormal() : rootView.showMaximized()
-			}
+		Switch {
+			id: theme
+			checked: false
+			text: checked ? "Dark" : "Light"
+			onCheckedChanged: root.Material.theme = checked ? Material.Dark : Material.Light
 		}
 
-		// The buttons used to minimize, maximize and close the application
-		SquareToolButton {
-			text: "🗕"
-			font.pixelSize: Qt.application.font.pixelSize * 1.5
-			onClicked: rootView.showMinimized()
-		}
-		SquareToolButton {
-			text: rootView.visibility === Window.Maximized ? "🗗" : "🗖"
-			font.pixelSize: Qt.application.font.pixelSize * 1.5
-			onClicked: rootView.visibility === Window.Maximized ? rootView.showNormal() : rootView.showMaximized()
-		}
-		SquareToolButton {
-			text: "🗙"
-			close: true
-			font.pixelSize: Qt.application.font.pixelSize * 1.5
-			onClicked: rootView.close()
-		}
-	}
-
-	// And finally, the content
-	Item {
-		id: content
-		anchors {
-			margins: 0
-			top: header.bottom
-			bottom: bottom.top
-			left: left.right
-			right: right.left
-		}
-
-		ColumnLayout {
-			anchors.centerIn: parent
-
-			Button {
-				text: "Hello"
-				onClicked: text = text === "Hello" ? "World" : "Hello"
-			}
-
-			Switch {
-				id: theme
-				checked: true
-				text: checked ? "Dark" : "Light"
-			}
+		Switch {
+			checked: false
+			text: checked ? "Fullscreen" : "Windowed"
+			onCheckedChanged: rootView.fullscreen = checked
 		}
 	}
 }
