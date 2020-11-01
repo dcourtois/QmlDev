@@ -63,6 +63,8 @@ void messageHandler(QtMsgType type, const QMessageLogContext &, const QString & 
 			error = true;
 			errors += message + "\n";
 			break;
+		default:
+			break;
 	}
 
 	// log to either Visual Studio debug output or the standard output, we're still interested
