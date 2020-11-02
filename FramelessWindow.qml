@@ -179,7 +179,7 @@ Pane {
 			MouseArea {
 				anchors.fill: parent
 				onPressed: rootView.startSystemMove()
-				onDoubleClicked: rootView.visibility === Window.Maximized ? rootView.showNormal() : rootView.showMaximized()
+				onDoubleClicked: rootView.maximized = !rootView.maximized
 			}
 		}
 
@@ -192,9 +192,9 @@ Pane {
 		}
 		SquareToolButton {
 			id: maximizeButton
-			text: rootView.visibility === Window.Maximized ? "🗗" : "🗖"
+			text: rootView.maximized ? "🗗" : "🗖"
 			font.pixelSize: Qt.application.font.pixelSize * 1.5
-			onClicked: rootView.visibility === Window.Maximized ? rootView.showNormal() : rootView.showMaximized()
+			onClicked: rootView.maximized = !rootView.maximized
 		}
 		SquareToolButton {
 			id: closeButton
